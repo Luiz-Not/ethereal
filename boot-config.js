@@ -76,7 +76,7 @@ require(['backbone', 'marionette','underscore','subroute','text', 'BackboneStick
     },
 
     rdsModule: function() {
-      require(['frontendPath/rds/router'], function(rds) {
+      require(['frontendPath/rds/router'], function(Rds) {
         App.Routers.Rds = new Rds('rds/');
       });
     },

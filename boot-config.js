@@ -16,6 +16,8 @@ require.config({
     frontendPath: 'frontend/modules',
 
     // CORE INCLUDES
+
+    bootstrap: 'lib/bootstrap/js/bootstrap.min',
     jquery: 'lib/jquery/jquery',
     backbone: 'lib/backbone/backbone',
     marionette: 'lib/marionette/lib/backbone.marionette',
@@ -30,6 +32,10 @@ require.config({
   },
 
   shim: {
+    bootstrap: {
+      deps:['jquery'],
+      exports: 'bootstrap'
+    },
 
     backbone: {
       deps: ['underscore', 'jquery'],
@@ -53,10 +59,33 @@ require.config({
       deps: ['backbone', 'jquery'],
       exports: 'subroute'
     },
+    Backgrid: {
+      deps: ['backbone'],
+      exports: 'Backgrid'
+    },
+    PageableCollection: {
+      deps: ['backbone'],
+      exports: 'backbone'
+    },
+
+    BackgridPaginator: {
+      deps: ['Backgrid'],
+      exports: 'BackgridPaginator'
+    },
+
+    BackgridAllCell: {
+      deps: ['Backgrid'],
+      exports: 'BackgridAllCell'
+    },
+
+    BackgridFilter: {
+      deps: ['Backgrid', 'lunr'],
+      exports: 'Backgrid'
+    },
   }
 });
 
-require(['backbone', 'marionette','underscore','subroute','text', 'BackboneStick', 'BackboneTrackit'], function() {
+require(['backbone', 'marionette','underscore','subroute','text', 'BackboneStick', 'BackboneTrackit', 'bootstrap' ], function() {
 
   App = new Backbone.Marionette.Application();
   App.Routers = {};
@@ -67,6 +96,8 @@ require(['backbone', 'marionette','underscore','subroute','text', 'BackboneStick
     routes: {
       '': 'dashboard',
       'rds/*subroute': 'rdsModule',
+      'menu/*subroute': 'menuModule',
+      'clientes/*subroute': 'clienteModule',
     },
 
     dashboard: function() {
@@ -78,6 +109,12 @@ require(['backbone', 'marionette','underscore','subroute','text', 'BackboneStick
     rdsModule: function() {
       require(['frontendPath/rds/router'], function(Rds) {
         App.Routers.Rds = new Rds('rds/');
+      });
+    },
+
+    clienteModule: function(){
+      require(['frontendPath/clientes/router'], function(Clientes){
+        App.Routers.Clientes = new Clientes('clientes/');
       });
     },
 
@@ -108,8 +145,10 @@ require(['backbone', 'marionette','underscore','subroute','text', 'BackboneStick
         App.mainRegion.show(new login());
       });
     } else {
-      require(['frontendPath/dashboard/views/dashboard'], function(dashboard) {
+      require(['frontendPath/dashboard/views/dashboard', 'frontendPath/menu/views/menu'], function(dashboard, menu) {
         App.mainRegion.show(new dashboard());
+        App.menuRegion.show(new menu());
+
         Backbone.history.start();
       });
     }

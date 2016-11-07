@@ -1,5 +1,5 @@
 define([
-  'text!frontendPath/rds/templates/rds.html',
+  'text!frontendPath/rds/templates/form-rds.html',
   ],
 
   function(tpl) {

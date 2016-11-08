@@ -14,15 +14,7 @@
 
 
  	function __construct(){
-
- 		$this->id = $id;
- 		$this->idRds = $idRds;
- 		$this->idStack = $idStack;
- 		$this->nome = $nome;
- 		$this->email = $email;
- 		$this->dominio = $dominio;
-
- 		
+ 			
  		$this->conexao = new Banco('clientes');
  		
  	}

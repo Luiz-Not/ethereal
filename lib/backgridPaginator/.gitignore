@@ -1,0 +1,13 @@
+bower_components
+node_modules
+test/coverage
+.rbenv-gemsets
+.rvmrc
+\#*\#
+.*~
+*~
+.\#*
+.DS_Store
+.localized
+Thumb.db
+*.ithmb

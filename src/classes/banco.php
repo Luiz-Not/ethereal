@@ -39,17 +39,19 @@ function cadastrar($campos){
 
 
 
-	$insert = "INSERT INTO {$this->tabela} ";	
+	$insert = " INSERT INTO {$this->tabela} ";	
 
-		foreach ($campos as $key => $value) {
+	foreach($campos as $key => $value) {
 			$chaves[] = $key;
 			$valores[] = $value;
-		}
+		};
 
-
-	$result = $this->conexao->query($insert .= "(".implode(',',$chaves).") VALUES (".implode(',',$valores).")");
+	$stmt = $insert .= "(".implode(',',$chaves).") VALUES (".implode(',',$valores).")";
 
 	
+
+	$result = $this->conexao->query($stmt);
+
 		return $result;
 	}
 

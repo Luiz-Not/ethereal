@@ -9,7 +9,7 @@ require '../src/classes/rds.php';
 require '../src/classes/stack.php';
 
 
-$app = new \Slim\App(["settings" => $config]);
+$app = new \Slim\App ;
 
 
 $app->get('/hello/{name}', function (Request $request, Response $response) {
@@ -22,7 +22,7 @@ $app->get('/hello/{name}', function (Request $request, Response $response) {
 
 // Retorna um JSON com os clientes cadastrados no banco com suas respectivas Rds e Stacks
 
-$app->get('/clientes/dashboard', function (Request $request , Response $response){
+$app->get('/clientes/', function (Request $request , Response $response){
 
 $cliente = new Cliente();
 
@@ -62,22 +62,62 @@ return $response;
 
 });
 
-$app->post('/rds/' ,function (Request $request, Response $response){
+$app->post('/clientes/' ,function ($request,$response){
+
+//   $parsedBody = $request->getParsedBody();
+
+$cliente = new Cliente();
+
+$parsedBody = $this->request->getParsedBody();
+
+$idRds		= 	$parsedBody['idRds'];
+$idStack 	= 	$parsedBody['idStack'];
+$nome 		= 	$parsedBody['nome'];
+$email 		= 	$parsedBody['email'];
+$dominio 	= 	$parsedBody['dominio'];
+
+	$cliente->setIdRds($idRds);	
+	$cliente->setIdStack($idStack);
+	$cliente->setNome($nome);
+	$cliente->setEmail($email);
+	$cliente->setDominio($dominio);
+
+	$verificar = $cliente->verificarEmail();
+
+		
+	if($verificar > 0){
+	
+	$response =  json_encode(array("Email ja cadastrado no banco"));
+		
+			} else {
+
+
+	$cadastrarCliente = $cliente->cadastrarNoBanco();
+	
+
+	$response = json_encode($cadastrarCliente);	
+	
+	}
+
+	return $response;
+});
+
+$app->post('/rds/' ,function ($request,$response){
+
+//   $parsedBody = $request->getParsedBody();
 
 $rds = new Rds();
 
-$nome = $app->request->post('nome');
-var_dump($nome);
-die();
-$id = $app->request->post('id');
-$url = $app->request->post('url');
-$port = $app->request->post('port');
 
+$parsedBody = $this->request->getParsedBody();
+
+$nome = $parsedBody['nome'];
+$url =  $parsedBody['url'];
+$port = $parsedBody['port'];
 
 $rds->setNome($nome); 
-$rds->setNome($id); 
-$rds->setNome($url); 
-$rds->setNome($port); 
+$rds->setUrl($url); 
+$rds->setPort($port); 
 
 $cadastro = $rds->cadastrarRds();
 
@@ -88,8 +128,29 @@ return $response;
 });
 
 
-$app->post('/addstack', 'insertStack');
+$app->post('/stack/' ,function ($request,$response){
 
+//   $parsedBody = $request->getParsedBody();
+
+$stack = new Stack();
+
+
+$parsedBody = $this->request->getParsedBody();
+
+$nome = $parsedBody['nome'];
+$endereco =  $parsedBody['endereco'];
+
+$stack->setNome($nome); 
+$stack->setEndereco($endereco); 
+
+
+$cadastro = $stack->cadastrarStack();
+
+$response = json_encode($cadastro);
+
+return $response;
+
+});
 
 $app->post('/updaterds', 'updateRds');
 $app->post('/updatestack', 'updateStack');

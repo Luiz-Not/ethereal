@@ -10,10 +10,7 @@ class Rds {
 
 function __construct(){
 
- 		$this->nome = $nome;
- 		$this->url = $url;
- 		$this->port = $port;
-
+ 		
  		$this->conexao = new Banco('rds');
  	}
 

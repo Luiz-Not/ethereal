@@ -9,8 +9,7 @@ class Stack {
 
  	function __construct(){
 
-		$this->nome = $nome;
-		$this->endereco = $endereco;
+		
 		$this->conexao = new Banco('stack');
  	}
 

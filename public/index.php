@@ -128,7 +128,7 @@ return $response;
 });
 
 
-$app->post('/stack/' ,function ($request,$response){
+$app->put('/stack/' ,function ($request,$response){
 
 //   $parsedBody = $request->getParsedBody();
 
@@ -151,6 +151,47 @@ $response = json_encode($cadastro);
 return $response;
 
 });
+
+$app->put('/clientes/' ,function ($request,$response){
+
+$cliente = new Cliente();
+
+$parsedBody = $this->request->getParsedBody();
+
+$idCliente 	=	$parsedBody['idCliente'];
+$idRds		= 	$parsedBody['idRds'];
+$idStack 	= 	$parsedBody['idStack'];
+$nome 		= 	$parsedBody['nome'];
+$email 		= 	$parsedBody['email'];
+$dominio 	= 	$parsedBody['dominio'];
+
+	$cliente->setId($idCliente);
+	$cliente->setIdRds($idRds);	
+	$cliente->setIdStack($idStack);
+	$cliente->setNome($nome);
+	$cliente->setEmail($email);
+	$cliente->setDominio($dominio);
+
+	$verificar = $cliente->verificarEmail();
+
+	
+	die();
+
+	if($verificar < 1){
+	
+	$response =  json_encode(array("Cadastro não localizado para alteração"));
+		
+			} else {
+
+	$updateCliente = $cliente->alterarCliente();
+	
+	$response = json_encode($updateCliente);	
+	
+	};
+
+	return $response;
+});
+
 
 $app->post('/updaterds', 'updateRds');
 $app->post('/updatestack', 'updateStack');

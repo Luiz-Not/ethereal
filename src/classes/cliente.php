@@ -166,20 +166,25 @@
 
  	function alterarCliente() {
 
- 	$adddate = date('Y-m-d H:i:s');
+ 	$alterdate = date('Y-m-d H:i:s');
  		
+ 	$idAlter = $this->idCliente;
+
  		$campos = array(
+ 			
  			'rds_id' => $this->idRds,
  			'stack_id' => $this->idStack,
  			'nome' => "'".$this->nome."'",
  			'email' =>"'".$this->email."'",
  			'dominio' => "'".$this->dominio."'",
- 			'update' => "'".$aupdate."'"
+ 			'update' => "'".$alterdate."'"
  			);
 
- 		$query = $this->conexao->alterar($campos);
+ 		$query = $this->conexao->alterar($campos,$idAlter);
 
  		
+ 		var_dump($query);
+ 		die();
 
  		if($query){
 
@@ -187,7 +192,7 @@
 
  		} else {
 
- 			return (array('success' => false, 'msg' => "Cadastro falhou"));
+ 			return (array('success' => false, 'msg' => "Alteração falhou"));
 
  		}
 

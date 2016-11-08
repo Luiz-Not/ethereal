@@ -14,7 +14,7 @@ $config['addContentLengthHeader'] = false;
 
 $config['db']['host']   = "localhost";
 $config['db']['user']   = "root";
-$config['db']['pass']   = "iset";
+$config['db']['pass']   = "";
 $config['db']['dbname'] = "projeto";
 
 try {
@@ -74,7 +74,7 @@ function cadastrar($campos){
 
 	}
 
-	function alterar($campos){
+	function alterar($campos,$idAlter){
 
 
 	$update = "UPDATE {$this->tabela} ";	
@@ -85,7 +85,8 @@ function cadastrar($campos){
 		}
 
 
-	$result = $this->conexao->query($update .= "(".implode(',',$chaves).") VALUES (".implode(',',$valores).")");
+
+	$result = $this->conexao->query($update .= "(".implode(',',$chaves).") SET (".implode(',',$valores).") WhHERE id=".$idAlter);
 
 	
 		return $result;

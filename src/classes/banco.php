@@ -46,11 +46,11 @@ function cadastrar($campos){
 			$valores[] = $value;
 		};
 
-	var_dump($this->conexao);
-	die();
+	$stmt = $insert .= "(".implode(',',$chaves).") VALUES (".implode(',',$valores).")";
 
-	$result = $this->conexao->query($insert .= "(".implode(',',$chaves).") VALUES (".implode(',',$valores).")");
+	
 
+	$result = $this->conexao->query($stmt);
 
 		return $result;
 	}

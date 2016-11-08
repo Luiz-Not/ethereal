@@ -1,5 +1,5 @@
 define([
-  'text!frontendPath/clientes/templates/clientes.html',
+  'text!frontendPath/rds/templates/form-rds.html',
   ],
 
   function(tpl) {
@@ -7,18 +7,20 @@ define([
       template: _.template(tpl),
 
       events: {
-
+        
       },
 
       initialize: function() {
-
+        
       },
 
       onRender: function() {
-
+        
       },
 
       onShow: function() {
+        
+      },
 
-      });
+    });
   });

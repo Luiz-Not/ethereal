@@ -1,6 +1,6 @@
 define([
-  'text!frontendPath/rds/templates/form-rds.html',
-  'frontendPath/rds/models/rds' 
+  'text!frontendPath/stack/templates/form-stack.html',
+  'frontendPath/stack/models/stack' 
   ],
 
   function(tpl, model) {
@@ -9,15 +9,15 @@ define([
       model: new model(),
 
       events: {
-        'click .btn-send': 'createRds'
+        'click .btn-stack': 'stack'
 
 
       },
 
       bindings : {
         'input[name=name]': 'name',
-        'input[name=url]': 'url', 
-        'input[name=port]': 'port'
+        'input[name=endereco]': 'endereco', 
+        
       },
 
       initialize: function() {
@@ -32,7 +32,7 @@ define([
         this.stickit();
       },
 
-      createRds: function(){
+      createRds: function(){   
         this.model.save({},{
           success: function(model, response){
             console.log(response)

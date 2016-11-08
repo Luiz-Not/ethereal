@@ -98,6 +98,7 @@ require(['backbone', 'marionette','underscore','subroute','text', 'BackboneStick
       'rds/*subroute': 'rdsModule',
       'menu/*subroute': 'menuModule',
       'clientes/*subroute': 'clienteModule',
+      'stack/*subroute': 'stackModule'
     },
 
     dashboard: function() {
@@ -115,6 +116,12 @@ require(['backbone', 'marionette','underscore','subroute','text', 'BackboneStick
     clienteModule: function(){
       require(['frontendPath/clientes/router'], function(Clientes){
         App.Routers.Clientes = new Clientes('clientes/');
+      });
+    },
+
+      stackModule: function(){
+      require(['frontendPath/stack/router'], function(Stack){
+        App.Routers.Stack = new Stack('stack/');
       });
     },
 

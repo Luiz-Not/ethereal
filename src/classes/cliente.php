@@ -1,10 +1,10 @@
 <?php
 
+ require_once 'banco.php';
 
+ class Cliente extends Banco {
 
-class Cliente extends Banco {
-
-	private $id;
+ 	private $id;
  	private $idRds;
  	private $idStack;
  	private $nome;
@@ -12,7 +12,8 @@ class Cliente extends Banco {
  	private $dominio;
 
 
-function __construct(){
+
+ 	function __construct(){
 
  		$this->id = $id;
  		$this->idRds = $idRds;
@@ -25,7 +26,6 @@ function __construct(){
  		$this->conexao = new Banco('clientes');
  		
  	}
-
 
  	public function setId($id){
 
@@ -75,11 +75,56 @@ function __construct(){
  	public function getNome(){
 
  		return $this->nome;
- 	}	
+ 	}
+
+ 	public function cadastrarNoBanco(){
+ 		
+ 		$adddate = date('Y-m-d H:i:s');
+
+ 			$campos = array(
+ 			'rds_id' => $this->idRds,
+ 			'stack_id' => $this->idStack,
+ 			'nome' => "'".$this->nome."'",
+ 			'email' =>"'".$this->email."'",
+ 			'dominio' => "'".$this->dominio."'",
+ 			'adddate' => "'".$adddate."'"
+ 			);
+
+ 			
+
+ 		$query = $this->conexao->cadastrar($campos);
+
+ 		if($query){
+
+ 			return (array('success' => true, 'msg' => "Cliente ". $this->nome ." cadastrado com sucesso"));
+
+ 		} else {
+
+ 			return (array('success' => false, 'msg' => "Cadastro falhou"));
+
+ 		}
 
 
-function dashboard(){
-	 		 		
+
+ 	}
+
+ 	function verificarEmail(){
+
+	$result = $this->conexao->query("SELECT * FROM clientes WHERE email = '$this->email'");
+	
+	$rowCount = $result->rowCount();
+
+
+	return $rowCount;	
+
+	}
+
+
+ 	function dashboard(){
+
+ 		
+ 		
+ 		
  		$queryDashboard =(
  			"	SELECT 
  			c.id as id,
@@ -101,7 +146,107 @@ function dashboard(){
  		
  	}
 
-}
+
+ 	function buscaCliente($busca){
+
+ 		
+ 		$queryBusca = "select * from clientes where nome like '%{$busca}%'";
 
 
+ 		$query = $db->query($queryBusca);
+
+ 		$fetch = $query->fetchAll(PDO::FETCH_ASSOC);
+
+ 		
+
+ 		return $fetch;
+
+ 	}
+
+
+ 	function alterarCliente() {
+
+ 	$adddate = date('Y-m-d H:i:s');
+ 		
+ 		$campos = array(
+ 			'rds_id' => $this->idRds,
+ 			'stack_id' => $this->idStack,
+ 			'nome' => "'".$this->nome."'",
+ 			'email' =>"'".$this->email."'",
+ 			'dominio' => "'".$this->dominio."'",
+ 			'update' => "'".$aupdate."'"
+ 			);
+
+ 		$query = $this->conexao->alterar($campos);
+
+ 		
+
+ 		if($query){
+
+ 			return (array('success' => true, 'msg' => "Cliente ". $this->nome ." alterado com sucesso"));
+
+ 		} else {
+
+ 			return (array('success' => false, 'msg' => "Cadastro falhou"));
+
+ 		}
+
+
+ 	}
+
+
+ 	function excluirCliente(){
+
+	$queryDelete = "DELETE FROM clientes WHERE id = '$this->id';" ;
+
+	$query = $this->conexao->query($queryDelete);
+
+	if($query){
+
+ 			return (array('success' => true, 'msg' => "Cliente excluído com sucesso"));
+
+ 		} else {
+
+ 			return (array('success' => false, 'msg' => "Processo falhou"));
+
+ 		}
+
+ 	}
+
+ 	function graficoClientesStack(){
+
+	$query = " 
+			SELECT count(c.stack_id) as stackQuant, s.nome as nomeStack 
+			FROM clientes c  
+			inner join stack s 
+			on c.stack_id = s.id 	
+			group by c.stack_id";	
+
+ 	$result = $this->conexao->query($query);
+ 	
+ 	$fetch = $result->fetchAll(PDO::FETCH_ASSOC);
+
+ 	 	return $fetch;
+ 	
+ 	}
+
+
+ 	function graficoClientesRds(){
+
+	$query = " 
+			SELECT count(c.rds_id) as rdsQuant, c.rds_id, r.nome as nomeRds
+			from clientes c
+			inner join rds r on c.rds_id = r.id
+			group by c.rds_id";
+
+ 	$result = $this->conexao->query($query);
+ 	
+ 	$fetch = $result->fetchAll(PDO::FETCH_ASSOC);
+
+ 	 	return $fetch;
+ 	
+ 	}
+
+
+ }
 ?>

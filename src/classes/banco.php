@@ -37,62 +37,44 @@ catch(PDOException $e)
 }
 
 function cadastrar($campos){
-
-
-
 	$insert = " INSERT INTO {$this->tabela} ";	
-
 	foreach($campos as $key => $value) {
 			$chaves[] = $key;
 			$valores[] = $value;
-		};
-
-	$stmt = $insert .= "(".implode(',',$chaves).") VALUES (".implode(',',$valores).")";
-
+	};
 	
-
+	$stmt = $insert .= "(".implode(',',$chaves).") VALUES (".implode(',',$valores).")";
 	$result = $this->conexao->query($stmt);
 
 		return $result;
 	}
 
-
-
 	function listar($campos){
-
 	$result = $this->conexao->query("SELECT ".implode(',',$campos) ." FROM '{$this->tabela}'");	
 
 	return $result;
-
 	}
 
-
 	function buscarJoin($dados){
-
 		$result = $this->conexao->query($dados);
 
 		return $result;
-
 	}
 
 	function alterar($campos,$idAlter){
-
-
 	$update = "UPDATE {$this->tabela} ";	
-
 		foreach ($campos as $key => $value) {
 			$chaves[] = $key;
 			$valores[] = $value;
 		}
+	$stmt = $update .= "(".implode(',',$chaves).implode(',',$valores).") WHERE id=".$idAlter;
+var_dump($stmt);
 
+die();
 
-
-	$result = $this->conexao->query($update .= "(".implode(',',$chaves).") SET (".implode(',',$valores).") WhHERE id=".$idAlter);
-
+	$result = $this->conexao->query($stmt);
 	
-		return $result;
-
-
+	return $result;
 	}
 
 

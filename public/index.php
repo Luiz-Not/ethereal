@@ -122,14 +122,17 @@ $app->put('/clientes/{id}' ,function ($request,$response){
 
 	$cliente = new Cliente();
 
+	$idUrl = $request->getAttribute('id');
+
 	$parsedBody = $this->request->getParsedBody();
 
-	$idCliente =	$parsedBody['idCliente'];
+	$idCliente =	$idUrl;
 	$idRds     = 	$parsedBody['idRds'];
 	$idStack   = 	$parsedBody['idStack'];
 	$nome      = 	$parsedBody['nome'];
 	$email     = 	$parsedBody['email'];
 	$dominio   = 	$parsedBody['dominio'];
+
 
 	$cliente->setId($idCliente);
 	$cliente->setIdRds($idRds);	
@@ -137,7 +140,7 @@ $app->put('/clientes/{id}' ,function ($request,$response){
 	$cliente->setNome($nome);
 	$cliente->setEmail($email);
 	$cliente->setDominio($dominio);
-	
+
 	$updateCliente = $cliente->alterarCliente();
 
 	$response = json_encode($updateCliente);	

@@ -123,13 +123,10 @@ class Cliente extends Banco {
 			'alterdate =' => "'".$alterdate."'"
 		);
 
-// UPDATE `projeto`.`clientes` SET `nome`='brunoslim2', `email`='bruno2@slim.com.br' WHERE `id`='1';
-
-
 		$query = $this->conexao->alterar($campos,$idAlter);
-		
+
 		if($query){
-			return (array('success' => true, 'msg' => "Cliente ". $this->nome ." alterado com sucesso"));
+			return (array('success' => true, 'msg' => " Cliente ". $this->nome ." alterado com sucesso"));
 		} else {
 			return (array('success' => false, 'msg' => "Alteração falhou"));
 		}

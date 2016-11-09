@@ -29,10 +29,8 @@ try {
 catch(PDOException $e)
    
     {
-    
-    echo "Connection failed: " . $e->getMessage();
-    
-    }
+        echo "Connection failed: " . $e->getMessage();
+        }
 	
 }
 
@@ -62,21 +60,23 @@ function cadastrar($campos){
 	}
 
 	function alterar($campos,$idAlter){
-	$update = "UPDATE {$this->tabela} ";	
-		foreach ($campos as $key => $value) {
-			$chaves[] = $key;
-			$valores[] = $value;
+		try{
+			$update = "UPDATE {$this->tabela} ";	
+
+			foreach ($campos as $key => $value) {
+				$upcampos[] = "$key". " $value ";
+			};
+
+			$stmt   = $update .= "" . implode($upcampos," , ") . " WHERE id= ".$idAlter;
+			$result = $this->conexao->query($stmt);
+
+			return $result;	
 		}
-	$stmt = $update .= "(".implode(',',$chaves).implode(',',$valores).") WHERE id=".$idAlter;
-var_dump($stmt);
 
-die();
-
-	$result = $this->conexao->query($stmt);
-	
-	return $result;
+		catch(PDOException $e){
+			return false;
+		}
 	}
-
 
 	function excluir($id){
 

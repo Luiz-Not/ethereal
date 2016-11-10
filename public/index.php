@@ -23,9 +23,10 @@ $app->get('/hello/{name}', function(Request $request, Response $response){
 $app->get('/clientes/', function(Request $request , Response $response){
 	$cliente   = new Cliente();
 	$dashboard = $cliente->dashboard();
-	$data  = json_encode($dashboard);
+	$data      = json_encode($dashboard);
+	$status    = 200;
 
-	return $response->write($data);
+	return $response->withStatus($status)->write($data);
 });
 
 // Retorna um Json com o client especificado pelo Id
@@ -34,31 +35,52 @@ $app->get('/clientes/{id}',function(Request $request , Response $response){
 	
 	$idUrl		 = $request->getAttribute('id');
 	$cliente   = new Cliente();
-	$busca		 = $cliente->buscaCliente($idUrl);
+	$cliente->setId($idUrl);
+	
+	$verificar = $cliente->verificarId($idUrl);
 
-	$data = json_encode($busca);
-
-	return $response->write($data);
+	if($verificar > 0){
+	$busca  = $cliente->buscaCliente($idUrl);
+	$data   = json_encode($busca);
+	$status = 200;
+	}else {
+	$data   = json_encode("Not Found");
+	$status = 404;
+	}
+	
+	return $response->withStatus($status)->write($data);
 });
 
 // Retorna um JSON com a lista de RDS
 
 $app->get('/rds/',function(Request $request, Response $response){
-	$rds      = new Rds();
-	$rdsList  = $rds->listRds();
-	$data = json_encode($rdsList);
+	$rds     = new Rds();
+	$rdsList = $rds->listRds();
+	$data    = json_encode($rdsList);
+	$status  = 200;
 
-	return $response->write($data);
+	return $response->withStatus($status)->write($data);
 });
+
+// Retorna um Json com o rds especificado pelo Id
 
 $app->get('/rds/{id}',function(Request $request, Response $response){
 	
 	$idUrl = $request->getAttribute('id');
 	$rds   = new Rds();
-	$busca = $rds->buscaRds($idUrl);
-	$data  = json_encode($busca);
-	
-	return $response->write($data);
+
+	$verificar = $rds->verificarId($idUrl);
+
+	if($verificar > 0){
+	$busca  = $rds->buscaRds($idUrl);
+	$data   = json_encode($busca);
+	$status = 200;
+	}else {
+	$data   = json_encode("Not Found");
+	$status = 404;
+	}
+		
+	return $response->withStatus($status)->write($data);
 });
 
 // Retorna um JSON com a lista de Stacks
@@ -67,22 +89,34 @@ $app->get('/stack/',function (Request $request, Response $response){
 	$stack     = new Stack();
 	$stackList = $stack->listStack();
 	$data      = json_encode($stackList);
+	$status    = 200;
 
-	return $response->write($data);
+	return $response->withStatus($status)->write($data);
 });
+
+// Retorna um Json com o stack especificado pelo Id
 
 $app->get('/stack/{id}',function(Request $request, Response $response){
 	
 	$idUrl = $request->getAttribute('id');
-	$rds   = new Stack();
-	$busca = $rds->buscaStack($idUrl);
-	$data  = json_encode($busca);
+	$stack = new Stack();
 
-	return $response->write($data);
+	$verificar = $stack->verificarId($idUrl);
+
+	if($verificar > 0){
+	$busca  = $stack->buscaStack($idUrl);
+	$data   = json_encode($busca);
+	$status = 200;
+	}else {
+		$data   = json_encode("Not Found");
+		$stauts = 404;
+	}
+	
+	return $response->withStatus($status)->write($data);
 });
 
 $app->post('/clientes/',function($request,$response){
-	$cliente = new Cliente();
+	$cliente    = new Cliente();
 	$parsedBody = $this->request->getParsedBody();
 
 	$idRds		= 	$parsedBody['idRds'];
@@ -108,6 +142,35 @@ $app->post('/clientes/',function($request,$response){
 
 	return $response->write($data);
 
+});
+
+$app->put('/clientes/{id}' ,function ($request,$response){
+
+	$cliente    = new Cliente();
+	
+	$idUrl      = $request->getAttribute('id');
+	
+	$parsedBody = $this->request->getParsedBody();
+
+	$idCliente =	$idUrl;
+	$idRds     = 	$parsedBody['idRds'];
+	$idStack   = 	$parsedBody['idStack'];
+	$nome      = 	$parsedBody['nome'];
+	$email     = 	$parsedBody['email'];
+	$dominio   = 	$parsedBody['dominio'];
+
+	$cliente->setId($idCliente);
+	$cliente->setIdRds($idRds);	
+	$cliente->setIdStack($idStack);
+	$cliente->setNome($nome);
+	$cliente->setEmail($email);
+	$cliente->setDominio($dominio);
+
+	$updateCliente = $cliente->alterarCliente();
+
+	$data = json_encode($updateCliente);	
+	
+	return $response->write($data);
 });
 
 $app->post('/rds/',function($request,$response){
@@ -143,39 +206,12 @@ $app->put('/stack/',function($request,$response){
 	$stack->setNome($nome); 
 	$stack->setEndereco($endereco); 
 	$cadastro = $stack->cadastrarStack();
-	$data = json_encode($cadastro);
+	$data     = json_encode($cadastro);
 
 	return $response->write($data);
 });
 
-$app->put('/clientes/{id}' ,function ($request,$response){
 
-	$cliente = new Cliente();
-
-	$idUrl = $request->getAttribute('id');
-
-	$parsedBody = $this->request->getParsedBody();
-
-	$idCliente =	$idUrl;
-	$idRds     = 	$parsedBody['idRds'];
-	$idStack   = 	$parsedBody['idStack'];
-	$nome      = 	$parsedBody['nome'];
-	$email     = 	$parsedBody['email'];
-	$dominio   = 	$parsedBody['dominio'];
-
-	$cliente->setId($idCliente);
-	$cliente->setIdRds($idRds);	
-	$cliente->setIdStack($idStack);
-	$cliente->setNome($nome);
-	$cliente->setEmail($email);
-	$cliente->setDominio($dominio);
-
-	$updateCliente = $cliente->alterarCliente();
-
-	$data = json_encode($updateCliente);	
-	
-	return $response->write($data);
-});
 //$app->post('/updaterds', 'updateRds');
 //$app->post('/updatestack', 'updateStack');
 //$app->delete('/deleterds/delete/:update_id','deleteUpdate');

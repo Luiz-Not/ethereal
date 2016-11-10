@@ -66,4 +66,11 @@ class Stack {
 		$fetch      = $query->fetch(PDO::FETCH_ASSOC);
 		return $fetch;
 	}
+
+	function verificarId($idUrl){
+		$this->id = $idUrl;
+		$result = $this->conexao->query("SELECT * FROM stack WHERE id = $this->id ");
+		$rowCount = $result->rowCount();
+		return $rowCount;	
+	}
 }

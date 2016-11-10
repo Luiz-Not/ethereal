@@ -68,8 +68,13 @@ class Rds {
 		$queryBusca = "select * from rds where id = $busca";
 		$query      = $this->conexao->query($queryBusca);
 		$fetch      = $query->fetch(PDO::FETCH_ASSOC);
-
-
 		return $fetch;
+	}
+
+	function verificarId($idUrl){
+		$this->id = $idUrl;
+		$result = $this->conexao->query("SELECT * FROM rds WHERE id = $this->id ");
+		$rowCount = $result->rowCount();
+		return $rowCount;	
 	}
 }

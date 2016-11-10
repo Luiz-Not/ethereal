@@ -76,6 +76,14 @@ class Cliente extends Banco {
 		return $rowCount;	
 	}
 
+	function verificarId($idUrl){
+		$this->id = $idUrl;
+		$result = $this->conexao->query("SELECT * FROM clientes WHERE id = $this->id ");
+		$rowCount = $result->rowCount();
+		
+		return $rowCount;	
+	}
+
 	function dashboard(){
 
 		$queryDashboard =(
@@ -99,12 +107,14 @@ class Cliente extends Banco {
 	}
 
 	function buscaCliente($busca){
-
+		
 		$queryBusca = "select * from clientes where id = $busca";
 		$query      = $this->conexao->query($queryBusca);
+
 		$fetch      = $query->fetch(PDO::FETCH_ASSOC);
 
 		return $fetch;
+	
 	}
 
 	function alterarCliente() {

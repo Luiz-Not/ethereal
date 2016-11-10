@@ -58,4 +58,12 @@ class Stack {
 		return $fetch;
 
 	}
+
+	function buscaStack($busca){
+
+		$queryBusca = "select * from stack where id = $busca";
+		$query      = $this->conexao->query($queryBusca);
+		$fetch      = $query->fetch(PDO::FETCH_ASSOC);
+		return $fetch;
+	}
 }

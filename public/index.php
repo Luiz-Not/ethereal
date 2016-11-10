@@ -51,11 +51,32 @@ $app->get('/rds/',function(Request $request, Response $response){
 	return $response->write($data);
 });
 
+$app->get('/rds/{id}',function(Request $request, Response $response){
+	
+	$idUrl = $request->getAttribute('id');
+	$rds   = new Rds();
+	$busca = $rds->buscaRds($idUrl);
+	$data  = json_encode($busca);
+	
+	return $response->write($data);
+});
+
 // Retorna um JSON com a lista de Stacks
 $app->get('/stack/',function (Request $request, Response $response){
+	
 	$stack     = new Stack();
 	$stackList = $stack->listStack();
-	$data  = json_encode($stackList);
+	$data      = json_encode($stackList);
+
+	return $response->write($data);
+});
+
+$app->get('/stack/{id}',function(Request $request, Response $response){
+	
+	$idUrl = $request->getAttribute('id');
+	$rds   = new Stack();
+	$busca = $rds->buscaStack($idUrl);
+	$data  = json_encode($busca);
 
 	return $response->write($data);
 });

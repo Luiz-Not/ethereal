@@ -62,4 +62,14 @@ class Rds {
 
 		return $fetch;
 	}
+
+	function buscaRds($busca){
+
+		$queryBusca = "select * from rds where id = $busca";
+		$query      = $this->conexao->query($queryBusca);
+		$fetch      = $query->fetch(PDO::FETCH_ASSOC);
+
+
+		return $fetch;
+	}
 }

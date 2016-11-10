@@ -4,79 +4,62 @@ class Rds {
 
 	private $id;
 	private $nome;
- 	private $url;
- 	private $port;
+	private $url;
+	private $port;
 
-
-function __construct(){
-
- 		
- 		$this->conexao = new Banco('rds');
- 	}
-
+	function __construct(){
+		$this->conexao = new Banco('rds');
+	}
 
 	function setNome($nome){
 
- 		$this->nome = $nome;
- 		}
+		$this->nome = $nome;
+	}
 
- 	function setUrl($url){
+	function setUrl($url){
 
- 		$this->url = $url;
- 		}
- 		
- 	function setPort($port){
+		$this->url = $url;
+	}
 
- 		$this->port = $port;
- 		}		
+	function setPort($port){
 
+		$this->port = $port;
+	}		
 
-public function cadastrarRds(){
- 		
- 		$adddate = date('Y-m-d H:i:s');
- 		
- 		$campos = array(
- 			
- 			'nome' => "'".$this->nome."'",
- 			'url' =>"'".$this->url."'",
- 			'port' => "'".$this->port."'",
- 			'adddate' => "'".$adddate."'"
- 			);
+	public function cadastrarRds(){
 
- 		$query = $this->conexao->cadastrar($campos);
+		$adddate = date('Y-m-d H:i:s');
 
- 		
+		$campos = array(
 
- 		if($query){
+			'nome' => "'".$this->nome."'",
+			'url' =>"'".$this->url."'",
+			'port' => "'".$this->port."'",
+			'adddate' => "'".$adddate."'"
+		);
 
- 			return (array('success' => true, 'msg' => "RDS: ". $this->nome ." cadastrada com sucesso"));
+		$query = $this->conexao->cadastrar($campos);
 
- 		} else {
+		if($query){
 
- 			return (array('success' => false, 'msg' => "Cadastro de RDS falhou"));
+			return (array('success' => true, 'msg' => "RDS: ". $this->nome ." cadastrada com sucesso"));
 
- 		}
+		} else {
 
+			return (array('success' => false, 'msg' => "Cadastro de RDS falhou"));
+		}
 
-
- 	}
-
-
+	}
 
 	function listRds(){
 
-
-	$queryRds = $this->conexao->query(
+		$queryRds = $this->conexao->query(
 				"	SELECT 	id,
 							nome,url,port 
-					FROM 	rds");
- 
-	$fetch = $queryRds->fetchAll(PDO::FETCH_ASSOC);
+							FROM 	rds");
 
-	return $fetch;
-	
+		$fetch = $queryRds->fetch(PDO::FETCH_ASSOC);
+
+		return $fetch;
 	}
 }
-
-
-?>

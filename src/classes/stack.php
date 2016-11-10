@@ -1,78 +1,61 @@
 <?php
 
+
 class Stack {
 
 	private $id;
 	private $nome;
- 	private $endereco;
- 	
+	private $endereco;
 
- 	function __construct(){
-
+	function __construct(){
 		
 		$this->conexao = new Banco('stack');
- 	}
+	}
 
+	function setNome($nome){
 
- 	function setNome($nome){
+		$this->nome = $nome;
+	}
 
- 		$this->nome = $nome;
- 	}
+	function setEndereco($endereco){
 
- 	function setEndereco($endereco){
+		$this->endereco = $endereco;
+	}
 
- 		$this->endereco = $endereco;
- 	}
+	public function cadastrarStack(){
 
-/// 
+		$adddate = date('Y-m-d H:i:s');
 
-		public function cadastrarStack(){
-	 		
-	 		$adddate = date('Y-m-d H:i:s');
-	 		
-	 		$campos = array(
-	 			
-	 			'nome' => "'".$this->nome."'",
-	 			'endereco' =>"'".$this->endereco."'",
-	 			'adddate' => "'".$adddate."'"
-	 			);
+		$campos = array(
 
-	 		$query = $this->conexao->cadastrar($campos);
+			'nome' => "'".$this->nome."'",
+			'endereco' =>"'".$this->endereco."'",
+			'adddate' => "'".$adddate."'"
+		);
 
-	 		
+		$query = $this->conexao->cadastrar($campos);
 
-	 		if($query){
+		if($query){
 
-	 			return (array('success' => true, 'msg' => "Stack: ". $this->nome ." cadastrada com sucesso"));
+			return (array('success' => true, 'msg' => "Stack: ". $this->nome ." cadastrada com sucesso"));
 
-	 		} else {
+		} else {
 
-	 			return (array('success' => false, 'msg' => "Cadastro de Stack falhou"));
+			return (array('success' => false, 'msg' => "Cadastro de Stack falhou"));
 
-	 		}
+		}
+	}
+	function listStack(){
 
-
-
- 	}
-
-
-
- 	function listStack(){
-
-
-	$db = new PDO("mysql:host=localhost;dbname=projeto","root","iset");
-
-	$queryStack = $db->query(
-				"	SELECT 	id,
+		$queryStack = $this->conexao->query(
+				"SELECT id,
 							nome,endereco 
-					FROM 	stack");
- 
-	$fetch = $queryStack->fetchAll(PDO::FETCH_ASSOC);
+							FROM stack");
 
-	return $fetch;
-	
+
+		$fetch = $queryStack->fetch(PDO::FETCH_ASSOC);
+
+		return $fetch;
+
 	}
 }
-
-
-?>

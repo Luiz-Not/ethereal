@@ -8,11 +8,10 @@ require '../src/classes/cliente.php';
 require '../src/classes/rds.php';
 require '../src/classes/stack.php';
 
+$app = new \Slim\App;
 
-$app = new \Slim\App ;
-
-
-$app->get('/hello/{name}', function (Request $request, Response $response) {
+$app->get('/hello/{name}', function(Request $request, Response $response){
+	
 	$name = $request->getAttribute('name');
 	$response->getBody()->write("Hello, $name");
 
@@ -21,35 +20,47 @@ $app->get('/hello/{name}', function (Request $request, Response $response) {
 
 // Retorna um JSON com os clientes cadastrados no banco com suas respectivas Rds e Stacks
 
-$app->get('/clientes/', function (Request $request , Response $response){
+$app->get('/clientes/', function(Request $request , Response $response){
 	$cliente   = new Cliente();
 	$dashboard = $cliente->dashboard();
-	$response  = json_encode($dashboard);
+	$data  = json_encode($dashboard);
 
-	return $response;
+	return $response->write($data);
+});
+
+// Retorna um Json com o client especificado pelo Id
+
+$app->get('/clientes/{id}',function(Request $request , Response $response){
+	
+	$idUrl		 = $request->getAttribute('id');
+	$cliente   = new Cliente();
+	$busca		 = $cliente->buscaCliente($idUrl);
+
+	$data = json_encode($busca);
+
+	return $response->write($data);
 });
 
 // Retorna um JSON com a lista de RDS
 
-$app->get('/rds/',function (Request $request, Response $response){
+$app->get('/rds/',function(Request $request, Response $response){
 	$rds      = new Rds();
 	$rdsList  = $rds->listRds();
-	$response = json_encode($rdsList);
+	$data = json_encode($rdsList);
 
-	return $response;
-
+	return $response->write($data);
 });
 
 // Retorna um JSON com a lista de Stacks
 $app->get('/stack/',function (Request $request, Response $response){
 	$stack     = new Stack();
 	$stackList = $stack->listStack();
-	$response  = json_encode($stackList);
+	$data  = json_encode($stackList);
 
-	return $response;
+	return $response->write($data);
 });
 
-$app->post('/clientes/' ,function ($request,$response){
+$app->post('/clientes/',function($request,$response){
 	$cliente = new Cliente();
 	$parsedBody = $this->request->getParsedBody();
 
@@ -68,17 +79,17 @@ $app->post('/clientes/' ,function ($request,$response){
 	$verificar = $cliente->verificarEmail();
 
 	if($verificar > 0){
-		$response =  json_encode(array("Email ja cadastrado no banco"));
+		$data =  json_encode(array("Email ja cadastrado no banco"));
 	} else {
 		$cadastrarCliente = $cliente->cadastrarNoBanco();
-		$response = json_encode($cadastrarCliente);	
+		$data = json_encode($cadastrarCliente);	
 	}
-	
-	return $response;
+
+	return $response->write($data);
 
 });
 
-$app->post('/rds/' ,function ($request,$response){
+$app->post('/rds/',function($request,$response){
 
 //   $parsedBody = $request->getParsedBody();
 	$rds = new Rds();
@@ -94,28 +105,26 @@ $app->post('/rds/' ,function ($request,$response){
 	$rds->setPort($port); 
 
 	$cadastro = $rds->cadastrarRds();
-	$response = json_encode($cadastro);
+	$data = json_encode($cadastro);
 
-	return $response;
-
+	return $response->write($data);
 });
 
+$app->put('/stack/',function($request,$response){
 
-$app->put('/stack/' ,function ($request,$response){
 	$stack = new Stack();
 
 	$parsedBody = $this->request->getParsedBody();
 
-	$nome     = $parsedBody['nome'];
+	$nome     =  $parsedBody['nome'];
 	$endereco =  $parsedBody['endereco'];
 	
 	$stack->setNome($nome); 
 	$stack->setEndereco($endereco); 
 	$cadastro = $stack->cadastrarStack();
-	$response = json_encode($cadastro);
+	$data = json_encode($cadastro);
 
-	return $response;
-
+	return $response->write($data);
 });
 
 $app->put('/clientes/{id}' ,function ($request,$response){
@@ -133,7 +142,6 @@ $app->put('/clientes/{id}' ,function ($request,$response){
 	$email     = 	$parsedBody['email'];
 	$dominio   = 	$parsedBody['dominio'];
 
-
 	$cliente->setId($idCliente);
 	$cliente->setIdRds($idRds);	
 	$cliente->setIdStack($idStack);
@@ -143,14 +151,13 @@ $app->put('/clientes/{id}' ,function ($request,$response){
 
 	$updateCliente = $cliente->alterarCliente();
 
-	$response = json_encode($updateCliente);	
+	$data = json_encode($updateCliente);	
 	
-	return $response;
+	return $response->write($data);
 });
-
-$app->post('/updaterds', 'updateRds');
-$app->post('/updatestack', 'updateStack');
-$app->delete('/deleterds/delete/:update_id','deleteUpdate');
-$app->delete('/deletestack/delete/:update_id','deleteUpdate');
+//$app->post('/updaterds', 'updateRds');
+//$app->post('/updatestack', 'updateStack');
+//$app->delete('/deleterds/delete/:update_id','deleteUpdate');
+//$app->delete('/deletestack/delete/:update_id','deleteUpdate');
 
 $app->run();

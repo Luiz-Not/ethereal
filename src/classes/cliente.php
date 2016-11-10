@@ -96,24 +96,21 @@ class Cliente extends Banco {
 		$fetch = $execute->fetchAll(PDO::FETCH_ASSOC);
 
 		return $fetch;
-
 	}
 
-
 	function buscaCliente($busca){
-		$queryBusca = "select * from clientes where nome like '%{$busca}%'";
-		$query = $db->query($queryBusca);
-		$fetch = $query->fetchAll(PDO::FETCH_ASSOC);
+
+		$queryBusca = "select * from clientes where id = $busca";
+		$query      = $this->conexao->query($queryBusca);
+		$fetch      = $query->fetch(PDO::FETCH_ASSOC);
 
 		return $fetch;
 	}
 
 	function alterarCliente() {
-
 		$alterdate = date('Y-m-d H:i:s');
-
 		$idAlter = $this->id;
-	
+
 		$campos = array(
 			'SET rds_id = '=> $this->idRds,
 			'stack_id =' => $this->idStack,
@@ -178,4 +175,3 @@ class Cliente extends Banco {
 			return $fetch;
 		}
 	}
-	?>

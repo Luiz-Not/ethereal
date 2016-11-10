@@ -11,6 +11,11 @@ class Rds {
 		$this->conexao = new Banco('rds');
 	}
 
+	function setId($id){
+
+		$this->id = $id;
+	}
+
 	function setNome($nome){
 
 		$this->nome = $nome;
@@ -76,5 +81,40 @@ class Rds {
 		$result = $this->conexao->query("SELECT * FROM rds WHERE id = $this->id ");
 		$rowCount = $result->rowCount();
 		return $rowCount;	
+	}
+
+	function alterarRds() {
+		$alterdate = date('Y-m-d H:i:s');
+		$idAlter = $this->id;
+
+		$campos = array(
+			'SET nome =' => "'".$this->nome."'",
+			'url =' =>"'".$this->url."'",
+			'port =' => "'".$this->port."'",
+			'alterdate =' => "'".$alterdate."'"
+		);
+
+		$query = $this->conexao->alterar($campos,$idAlter);
+
+		if($query){
+			return (array('success' => true, 'msg' => " RDS ". $this->nome ." alterado com sucesso"));
+		} else {
+			return (array('success' => false, 'msg' => "Alteração falhou"));
+		}
+	}
+
+	function excluirRds(){
+		$queryDelete = "DELETE FROM rds WHERE id = '$this->id';" ;
+		$query = $this->conexao->query($queryDelete);
+
+		if($query){
+
+			return (array('success' => true, 'msg' => "Rds excluído com sucesso"));
+
+		} else {
+
+			return (array('success' => false, 'msg' => "Processo falhou"));
+		}
+
 	}
 }

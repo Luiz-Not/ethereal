@@ -175,7 +175,6 @@ $app->put('/clientes/{id}' ,function ($request,$response){
 
 $app->post('/rds/',function($request,$response){
 
-//   $parsedBody = $request->getParsedBody();
 	$rds = new Rds();
 
 	$parsedBody = $this->request->getParsedBody();
@@ -194,7 +193,7 @@ $app->post('/rds/',function($request,$response){
 	return $response->write($data);
 });
 
-$app->put('/stack/',function($request,$response){
+$app->post('/stack/',function($request,$response){
 
 	$stack = new Stack();
 
@@ -212,9 +211,99 @@ $app->put('/stack/',function($request,$response){
 });
 
 
-//$app->post('/updaterds', 'updateRds');
-//$app->post('/updatestack', 'updateStack');
-//$app->delete('/deleterds/delete/:update_id','deleteUpdate');
-//$app->delete('/deletestack/delete/:update_id','deleteUpdate');
+$app->put('/rds/{id}' ,function ($request,$response){
+
+	$rds   = new Rds();
+	$idUrl = $request->getAttribute('id');
+	$parsedBody = $this->request->getParsedBody();
+
+	$idRds = 	$idUrl;
+	$nome  = 	$parsedBody['nome'];
+	$url   = 	$parsedBody['url'];
+	$port  = 	$parsedBody['port'];
+
+	$rds->setId($idRds);
+	$rds->setNome($nome);
+	$rds->setUrl($url);
+	$rds->setPort($port);
+
+	$updateRds = $rds->alterarRds($idUrl);
+
+	$data = json_encode($updateRds);	
+		
+	return $response->write($data);
+
+});
+
+
+$app->put('/stack/{id}' ,function ($request,$response){
+
+	$stack   = new Stack();
+	$idUrl = $request->getAttribute('id');
+	$parsedBody = $this->request->getParsedBody();
+
+	$idStack  = 	$idUrl;
+	$nome     = 	$parsedBody['nome'];
+	$endereco = 	$parsedBody['endereco'];
+	
+	$stack->setId($idStack);
+	$stack->setNome($nome);
+	$stack->setEndereco($endereco);
+
+	$updateStack = $stack->alterarStack($idUrl);
+
+	$data = json_encode($updateStack);	
+		
+	return $response->write($data);
+
+});
+
+$app->delete('/clientes/{id}' ,function ($request,$response){
+
+	$cliente    = new Cliente();
+	$idUrl      = $request->getAttribute('id');
+	$parsedBody = $this->request->getParsedBody();
+	$idCliente  =	$idUrl;
+	
+	$cliente->setId($idCliente);
+
+	$deleteCliente = $cliente->excluirCliente();
+	
+	$data          = json_encode($deleteCliente);	
+	
+	return $response->write($data);
+});
+
+$app->delete('/rds/{id}' ,function ($request,$response){
+
+	$rds        = new Rds ();
+	$idUrl      = $request->getAttribute('id');
+	$parsedBody = $this->request->getParsedBody();
+	$idRds      =	$idUrl;
+	
+	$rds->setId($idRds);
+
+	$deleteRds = $rds->excluirRds();
+	
+	$data      = json_encode($deleteRds);	
+	
+	return $response->write($data);
+});
+
+$app->delete('/stack/{id}' ,function ($request,$response){
+
+	$stack      = new Stack ();
+	$idUrl      = $request->getAttribute('id');
+	$parsedBody = $this->request->getParsedBody();
+	$idStack    =	$idUrl;
+	
+	$stack->setId($idStack);
+
+	$deleteStack = $stack->excluirStack();
+	
+	$data        = json_encode($deleteStack);	
+	
+	return $response->write($data);
+});
 
 $app->run();

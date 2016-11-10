@@ -12,6 +12,11 @@ class Stack {
 		$this->conexao = new Banco('stack');
 	}
 
+	function setId($id){
+
+		$this->id = $id;
+
+	}
 	function setNome($nome){
 
 		$this->nome = $nome;
@@ -72,5 +77,39 @@ class Stack {
 		$result = $this->conexao->query("SELECT * FROM stack WHERE id = $this->id ");
 		$rowCount = $result->rowCount();
 		return $rowCount;	
+	}
+
+	function alterarStack() {
+		$alterdate = date('Y-m-d H:i:s');
+		$idAlter = $this->id;
+
+		$campos = array(
+			'SET nome =' => "'".$this->nome."'",
+			'endereco =' =>"'".$this->endereco."'",
+			'alterdate =' => "'".$alterdate."'"
+		);
+
+		$query = $this->conexao->alterar($campos,$idAlter);
+
+		if($query){
+			return (array('success' => true, 'msg' => " Stack ". $this->nome ." alterado com sucesso"));
+		} else {
+			return (array('success' => false, 'msg' => "Alteração falhou"));
+		}
+	}
+
+	function excluirStack(){
+		$queryDelete = "DELETE FROM stack WHERE id = '$this->id';" ;
+		$query = $this->conexao->query($queryDelete);
+
+		if($query){
+
+			return (array('success' => true, 'msg' => "Stack excluído com sucesso"));
+
+		} else {
+
+			return (array('success' => false, 'msg' => "Processo falhou"));
+		}
+
 	}
 }

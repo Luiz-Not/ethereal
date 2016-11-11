@@ -3,12 +3,12 @@ use \Psr\Http\Message\ServerRequestInterface as Request;
 use \Psr\Http\Message\ResponseInterface as Response;
 
 require '../vendor/autoload.php';
+$app = new \Slim\App;
 require '../src/classes/banco.php';
 require '../src/classes/cliente.php';
 require '../src/classes/rds.php';
 require '../src/classes/stack.php';
-
-$app = new \Slim\App;
+require '../src/middleware.php';
 
 $app->get('/hello/{name}', function(Request $request, Response $response){
 	
@@ -35,20 +35,33 @@ $app->get('/clientes/{id}',function(Request $request , Response $response){
 	
 	$idUrl		 = $request->getAttribute('id');
 	$cliente   = new Cliente();
-	$cliente->setId($idUrl);
 	
-	$verificar = $cliente->verificarId($idUrl);
+	if(is_numeric($idUrl)){
 
-	if($verificar > 0){
-	$busca  = $cliente->buscaCliente($idUrl);
-	$data   = json_encode($busca);
-	$status = 200;
+		$cliente->setId($idUrl);
+		$verificar = $cliente->verificarId($idUrl);
+
+		if($verificar > 0){
+			$busca  = $cliente->buscaCliente($idUrl);
+			$data   = json_encode($busca);
+			$status = 200;
+
+		}else{
+			$data   = json_encode("Not Found");
+			$status = 404;
+		}
+
+		return $response->withStatus($status)->write($data);
+
 	}else {
-	$data   = json_encode("Not Found");
-	$status = 404;
+
+		$data = json_encode("Parâmetro inválido");
+		$status = 400;
+
+		return $response->withStatus($status)->write($data);
+
 	}
-	
-	return $response->withStatus($status)->write($data);
+
 });
 
 // Retorna um JSON com a lista de RDS
@@ -69,18 +82,26 @@ $app->get('/rds/{id}',function(Request $request, Response $response){
 	$idUrl = $request->getAttribute('id');
 	$rds   = new Rds();
 
-	$verificar = $rds->verificarId($idUrl);
+	if(is_numeric($idUrl)){
+		$verificar = $rds->verificarId($idUrl);
 
-	if($verificar > 0){
-	$busca  = $rds->buscaRds($idUrl);
-	$data   = json_encode($busca);
-	$status = 200;
-	}else {
-	$data   = json_encode("Not Found");
-	$status = 404;
-	}
+		if($verificar > 0){
+			$busca  = $rds->buscaRds($idUrl);
+			$data   = json_encode($busca);
+			$status = 200;
+		}else{
+			$data   = json_encode("Not Found");
+			$status = 404;
+		}
 		
-	return $response->withStatus($status)->write($data);
+		return $response->withStatus($status)->write($data);
+	}else{
+
+		$data   = json_encode("Parâmetro inválido");
+		$status = 400;
+
+		return $response->withStatus($status)->write($data);
+	}
 });
 
 // Retorna um JSON com a lista de Stacks
@@ -101,19 +122,30 @@ $app->get('/stack/{id}',function(Request $request, Response $response){
 	$idUrl = $request->getAttribute('id');
 	$stack = new Stack();
 
-	$verificar = $stack->verificarId($idUrl);
+	if(is_numeric($idUrl)){
+		$verificar = $stack->verificarId($idUrl);
 
-	if($verificar > 0){
-	$busca  = $stack->buscaStack($idUrl);
-	$data   = json_encode($busca);
-	$status = 200;
-	}else {
-		$data   = json_encode("Not Found");
-		$stauts = 404;
+		if($verificar > 0){
+			$busca  = $stack->buscaStack($idUrl);
+			$data   = json_encode($busca);
+			$status = 200;
+		}else{
+			$data   = json_encode("Not Found");
+			$stauts = 404;
+		}
+
+		return $response->withStatus($status)->write($data);
+
+	}else{
+
+		$data   = json_encode("Parâmetro inválido");
+		$status = 400;
+
+		return $response->withStatus($status)->write($data);
 	}
-	
-	return $response->withStatus($status)->write($data);
 });
+
+// cadastra o cliente no banco de dados
 
 $app->post('/clientes/',function($request,$response){
 	$cliente    = new Cliente();
@@ -131,52 +163,74 @@ $app->post('/clientes/',function($request,$response){
 	$cliente->setEmail($email);
 	$cliente->setDominio($dominio);
 
+	$cliente->verificarCampo($idRds);
+	$cliente->verificarCampo($idStack);
+	$cliente->verificarCampo($nome);
+	$cliente->verificarCampo($email);
+	$cliente->verificarCampo($dominio);
+
 	$verificar = $cliente->verificarEmail();
 
 	if($verificar > 0){
 		$data =  json_encode(array("Email ja cadastrado no banco"));
-	} else {
+	}else{
 		$cadastrarCliente = $cliente->cadastrarNoBanco();
 		$data = json_encode($cadastrarCliente);	
 	}
 
 	return $response->write($data);
-
 });
+// atualiza o cadastro do cliente do id informado
 
 $app->put('/clientes/{id}' ,function ($request,$response){
 
 	$cliente    = new Cliente();
 	
 	$idUrl      = $request->getAttribute('id');
-	
 	$parsedBody = $this->request->getParsedBody();
 
 	$idCliente =	$idUrl;
-	$idRds     = 	$parsedBody['idRds'];
-	$idStack   = 	$parsedBody['idStack'];
-	$nome      = 	$parsedBody['nome'];
-	$email     = 	$parsedBody['email'];
-	$dominio   = 	$parsedBody['dominio'];
+	if(is_numeric($idUrl)){
+		$idRds     = 	$parsedBody['idRds'];
+		$idStack   = 	$parsedBody['idStack'];
+		$nome      = 	$parsedBody['nome'];
+		$email     = 	$parsedBody['email'];
+		$dominio   = 	$parsedBody['dominio'];
 
-	$cliente->setId($idCliente);
-	$cliente->setIdRds($idRds);	
-	$cliente->setIdStack($idStack);
-	$cliente->setNome($nome);
-	$cliente->setEmail($email);
-	$cliente->setDominio($dominio);
+		$cliente->setId($idCliente);
+		$cliente->setIdRds($idRds);	
+		$cliente->setIdStack($idStack);
+		$cliente->setNome($nome);
+		$cliente->setEmail($email);
+		$cliente->setDominio($dominio);
 
-	$updateCliente = $cliente->alterarCliente();
+		$cliente->verificarCampo($idRds);
+		$cliente->verificarCampo($idStack);
+		$cliente->verificarCampo($nome);
+		$cliente->verificarCampo($email);
+		$cliente->verificarCampo($dominio);
 
-	$data = json_encode($updateCliente);	
-	
-	return $response->write($data);
+		$updateCliente = $cliente->alterarCliente();
+
+		$data = json_encode($updateCliente);	
+
+		return $response->write($data);
+
+	}else{
+
+		$data   = json_encode("Parâmetro inválido");
+		$status = 400;
+
+		return $response->withStatus($status)->write($data);
+	}
+
 });
+
+// cadastra o rds no banco de dados
 
 $app->post('/rds/',function($request,$response){
 
-	$rds = new Rds();
-
+	$rds        = new Rds();
 	$parsedBody = $this->request->getParsedBody();
 
 	$nome = $parsedBody['nome'];
@@ -187,16 +241,21 @@ $app->post('/rds/',function($request,$response){
 	$rds->setUrl($url); 
 	$rds->setPort($port); 
 
+	$rds->verificarCampo($url);
+	$rds->verificarCampo($port);
+	$rds->verificarCampo($nome);
+	
 	$cadastro = $rds->cadastrarRds();
 	$data = json_encode($cadastro);
 
 	return $response->write($data);
 });
 
+// cadastra o stack no banco de dados
+
 $app->post('/stack/',function($request,$response){
 
-	$stack = new Stack();
-
+	$stack      = new Stack();
 	$parsedBody = $this->request->getParsedBody();
 
 	$nome     =  $parsedBody['nome'];
@@ -204,12 +263,17 @@ $app->post('/stack/',function($request,$response){
 	
 	$stack->setNome($nome); 
 	$stack->setEndereco($endereco); 
+
+	$stack->verificarCampo($nome);
+	$stack->verificarCampo($endereco);
+
 	$cadastro = $stack->cadastrarStack();
 	$data     = json_encode($cadastro);
 
 	return $response->write($data);
 });
 
+// atualiza as informações do rds no banco de dados o id informado
 
 $app->put('/rds/{id}' ,function ($request,$response){
 
@@ -218,45 +282,67 @@ $app->put('/rds/{id}' ,function ($request,$response){
 	$parsedBody = $this->request->getParsedBody();
 
 	$idRds = 	$idUrl;
-	$nome  = 	$parsedBody['nome'];
-	$url   = 	$parsedBody['url'];
-	$port  = 	$parsedBody['port'];
 
-	$rds->setId($idRds);
-	$rds->setNome($nome);
-	$rds->setUrl($url);
-	$rds->setPort($port);
+	if(is_numeric($idUrl)){
 
-	$updateRds = $rds->alterarRds($idUrl);
+		$nome  = 	$parsedBody['nome'];
+		$url   = 	$parsedBody['url'];
+		$port  = 	$parsedBody['port'];
 
-	$data = json_encode($updateRds);	
+		$rds->setId($idRds);
+		$rds->setNome($nome);
+		$rds->setUrl($url);
+		$rds->setPort($port);
+
+		$updateRds = $rds->alterarRds($idUrl);
+
+		$data = json_encode($updateRds);	
 		
-	return $response->write($data);
+		return $response->write($data);
 
+	}else{
+
+		$data   = json_encode("Parâmetro inválido");
+		$status = 400;
+
+		return $response->withStatus($status)->write($data);
+	}
 });
 
+// atualiza as informações do stack no banco de dados o id informado
 
 $app->put('/stack/{id}' ,function ($request,$response){
 
-	$stack   = new Stack();
+	$stack = new Stack();
 	$idUrl = $request->getAttribute('id');
 	$parsedBody = $this->request->getParsedBody();
 
-	$idStack  = 	$idUrl;
-	$nome     = 	$parsedBody['nome'];
-	$endereco = 	$parsedBody['endereco'];
-	
-	$stack->setId($idStack);
-	$stack->setNome($nome);
-	$stack->setEndereco($endereco);
+	if(is_numeric($idUrl)){
 
-	$updateStack = $stack->alterarStack($idUrl);
+		$idStack  = 	$idUrl;
+		$nome     = 	$parsedBody['nome'];
+		$endereco = 	$parsedBody['endereco'];
 
-	$data = json_encode($updateStack);	
+		$stack->setId($idStack);
+		$stack->setNome($nome);
+		$stack->setEndereco($endereco);
+
+		$updateStack = $stack->alterarStack($idUrl);
+
+		$data = json_encode($updateStack);	
 		
-	return $response->write($data);
+		return $response->write($data);
 
+	}else{
+
+		$data   = json_encode("Parâmetro inválido");
+		$status = 400;
+
+		return $response->withStatus($status)->write($data);
+	}
 });
+
+// exclui as informações do cliente no banco de dados o id informado
 
 $app->delete('/clientes/{id}' ,function ($request,$response){
 
@@ -265,14 +351,26 @@ $app->delete('/clientes/{id}' ,function ($request,$response){
 	$parsedBody = $this->request->getParsedBody();
 	$idCliente  =	$idUrl;
 	
-	$cliente->setId($idCliente);
+	if(is_numeric($idUrl)){
 
-	$deleteCliente = $cliente->excluirCliente();
-	
-	$data          = json_encode($deleteCliente);	
-	
-	return $response->write($data);
+		$cliente->setId($idCliente);
+
+		$deleteCliente = $cliente->excluirCliente();
+		$status        = 200;
+		$data          = json_encode($deleteCliente);	
+
+		return $response->write($data);
+
+	}else{
+
+		$data   = json_encode("Parâmetro inválido");
+		$status = 400;
+
+		return $response->withStatus($status)->write($data);
+	}
 });
+
+// exclui as informações do rds no banco de dados o id informado
 
 $app->delete('/rds/{id}' ,function ($request,$response){
 
@@ -280,15 +378,27 @@ $app->delete('/rds/{id}' ,function ($request,$response){
 	$idUrl      = $request->getAttribute('id');
 	$parsedBody = $this->request->getParsedBody();
 	$idRds      =	$idUrl;
-	
-	$rds->setId($idRds);
 
-	$deleteRds = $rds->excluirRds();
-	
-	$data      = json_encode($deleteRds);	
-	
-	return $response->write($data);
+	if(is_numeric($idUrl)){
+
+		$rds->setId($idRds);
+
+		$deleteRds = $rds->excluirRds();
+		$status    = 200;
+		$data      = json_encode($deleteRds);	
+
+		return $response->write($data);
+
+	}else{
+
+		$data   = json_encode("Parâmetro inválido");
+		$status = 400;
+
+		return $response->withStatus($status)->write($data);
+	}
 });
+
+// exclui as informações do stack no banco de dados o id informado
 
 $app->delete('/stack/{id}' ,function ($request,$response){
 
@@ -297,13 +407,48 @@ $app->delete('/stack/{id}' ,function ($request,$response){
 	$parsedBody = $this->request->getParsedBody();
 	$idStack    =	$idUrl;
 	
-	$stack->setId($idStack);
+	if(is_numeric($idUrl)){
 
-	$deleteStack = $stack->excluirStack();
-	
-	$data        = json_encode($deleteStack);	
-	
-	return $response->write($data);
+		$stack->setId($idStack);
+
+		$deleteStack = $stack->excluirStack();
+		$status      = 200;
+		$data        = json_encode($deleteStack);	
+
+		return $response->withStatus($status)->write($data);
+
+	}else{
+
+		$data   = json_encode("Parâmetro inválido");
+		$status = 400;
+
+		return $response->withStatus($status)->write($data);
+	}
 });
+
+
+$app->get('/clientes/graficos/stack/', function ($request,$response){
+
+	$cliente = new Cliente();
+
+	$grafico = $cliente->graficoClientesStack();
+	$status  = 200;
+	$data    = json_encode($grafico);	
+
+	return $response->withStatus($status)->write($data);
+});
+
+$app->get('/clientes/graficos/rds/', function ($request,$response){
+
+	$cliente = new Cliente();
+
+	$grafico = $cliente->graficoClientesRds();
+	$status  = 200;
+	$data    = json_encode($grafico);	
+
+	return $response->withStatus($status)->write($data);
+});
+
+
 
 $app->run();

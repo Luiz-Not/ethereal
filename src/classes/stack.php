@@ -100,7 +100,7 @@ class Stack {
 
 	function excluirStack(){
 		$queryDelete = "DELETE FROM stack WHERE id = '$this->id';" ;
-		$query = $this->conexao->query($queryDelete);
+		$query       = $this->conexao->query($queryDelete);
 
 		if($query){
 
@@ -111,5 +111,15 @@ class Stack {
 			return (array('success' => false, 'msg' => "Processo falhou"));
 		}
 
+	}
+
+	function verificarCampo($campo){
+
+		if($campo == null){
+
+			echo $response = json_encode("Campo ".$campo." vazio");die;
+			
+			die;
+		}
 	}
 }

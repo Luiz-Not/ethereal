@@ -117,4 +117,14 @@ class Rds {
 		}
 
 	}
+
+	function verificarCampo($campo){
+
+		if($campo == null){
+
+			echo $response = json_encode("Campo ".$campo." vazio");die;
+			
+			die;
+		}
+	}
 }

@@ -84,6 +84,17 @@ class Cliente extends Banco {
 		return $rowCount;	
 	}
 
+	function verificarCampo($campo){
+
+		if($campo == null){
+
+			echo $response = json_encode("Campo ".$campo." vazio");die;
+			
+			die;
+		}
+	}
+	
+
 	function dashboard(){
 
 		$queryDashboard =(
@@ -114,7 +125,7 @@ class Cliente extends Banco {
 		$fetch      = $query->fetch(PDO::FETCH_ASSOC);
 
 		return $fetch;
-	
+		
 	}
 
 	function alterarCliente() {
